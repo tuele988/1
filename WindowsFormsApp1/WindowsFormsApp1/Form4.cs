@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Windows.Forms;
 
 namespace WindowsFormsApp1
@@ -22,32 +23,7 @@ namespace WindowsFormsApp1
         {
             loadkhachhang();
             loadsanpham();
-          
-        }
-
-        private void textBox4_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox3_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox5_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
+            loadsanpham12();
         }
         protected void loadkhachhang()
         {
@@ -61,7 +37,12 @@ namespace WindowsFormsApp1
             sanpham.DisplayMember = "proName";
             sanpham.ValueMember = "id";
         }
- 
+        protected void loadsanpham12()
+        {
+            this.sanpham123.DataSource = kha.allsanpham();
+            sanpham123.DisplayMember = "proName";
+            sanpham123.ValueMember = "id";
+        }
 
         private void tenkhachhang_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -88,6 +69,39 @@ namespace WindowsFormsApp1
             {
                 chietkhau.Text = chietkhau12.ToString();
             }
+        }
+        int vtchon = -1;
+
+        private void GVdonhang_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            vtchon = e.RowIndex;
+            if (vtchon < 0 || vtchon >= GVdonhang.Rows.Count)
+            {
+                return;
+            }
+            string comboboxSelectedValue = string.Empty;
+            if (GVdonhang.Columns["sanpham123"].GetType() == typeof(DataGridViewComboBoxColumn))
+                comboboxSelectedValue = GVdonhang.Rows[vtchon].Cells["sanpham123"].Value.ToString();
+            float gia = kha.Giasanpham(int.Parse(comboboxSelectedValue.ToString()));
+            GVdonhang.Rows[vtchon].Cells["gia123"].Value = gia;
+            DataGridViewRow gv = GVdonhang.CurrentRow;
+            int soluong31=0;
+            try
+            {
+                soluong31 = int.Parse((string)(gv.Cells["soluong123"].Value == DBNull.Value ? " " : gv.Cells["soluong123"].Value));
+            }
+            catch (Exception ex)
+            {
+
+            }
+            float tongtien = gia * soluong31;
+            GVdonhang.Rows[vtchon].Cells["tongtien"].Value  = tongtien;
+            xuatMA.Text = soluong31.ToString();
+        }
+
+        private void GVdonhang_CancelRowEdit(object sender, QuestionEventArgs e)
+        {
+
         }
     }
 }
